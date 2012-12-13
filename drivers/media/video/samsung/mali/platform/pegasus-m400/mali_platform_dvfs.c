@@ -245,18 +245,6 @@ static mali_bool mali_dvfs_status(u32 utilization)
 	level = 0; // Step delta
 	mp = mali_policy;
 
-#ifdef EXYNOS4_ASV_ENABLED
-	static mali_bool asv_applied = MALI_FALSE;
-
-	if (asv_applied == MALI_FALSE) {
-		mali_dvfs_table_update();
-		change_mali_dvfs_status(mp.lowStep, 0);
-		asv_applied = MALI_TRUE;
-
-		return MALI_TRUE;
-	}
-#endif
-
 	if (utilization > (int)(255 * mp.upThreshold / 100) &&
 	   (mp.currentStep > mp.highStep)) {
 		--level;
@@ -585,6 +573,11 @@ mali_bool init_mali_dvfs_status(int step)
 
 	/*add a error handling here*/
 	set_mali_dvfs_current_step(step);
+
+#ifdef EXYNOS4_ASV_ENABLED
+	mali_dvfs_table_update();
+	change_mali_dvfs_status(mali_policy.lowStep, 0);
+#endif
 
 	return MALI_TRUE;
 }
