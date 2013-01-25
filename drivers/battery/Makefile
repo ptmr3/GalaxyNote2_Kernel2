@@ -1,6 +1,6 @@
 
 obj-$(CONFIG_BATTERY_SAMSUNG)	+= samsung_battery.o	\
-					battery-factory.o charge_current.o
+					battery-factory.o 
 
 obj-$(CONFIG_MAX8997_CHARGER)	+= max8997-charger.o
 
