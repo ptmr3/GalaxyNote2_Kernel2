@@ -74,7 +74,7 @@ int findStep(int clock) {
 	return ret;
 }
 
-struct mali_policy_config{
+static struct mali_policy_config{
 	unsigned int lowStep;
 	unsigned int highStep;
 	unsigned int currentStep;
@@ -237,33 +237,31 @@ static mali_bool mali_dvfs_status(u32 utilization)
 	unsigned int nextStep;
 	unsigned int level;
 	unsigned int target_freq;
-	int i;
 
-	struct mali_policy_config mp;
+	struct mali_policy_config *mp = &mali_policy;
 
 	level = 0; // Step delta
-	mp = mali_policy;
 
-	if (utilization > (int)(255 * mp.upThreshold / 100) &&
-	   (mp.currentStep > mp.highStep)) {
+	if (utilization > (int)(255 * mp->upThreshold / 100) &&
+	   (mp->currentStep > mp->highStep)) {
 		--level;
 	}
 
-	if (utilization < (int)(255 * (mp.upThreshold - mp.downDifferential) / 100) &&
-	   (mp.currentStep < mp.lowStep)) {
-		target_freq = (mali_dvfs[mp.currentStep].clock * utilization) / 255;
-		for(i = mp.currentStep; i < mp.lowStep; i++) {
-			if(mali_dvfs[i].clock < target_freq) break;
+	if (utilization < (int)(255 * (mp->upThreshold - mp->downDifferential) / 100) &&
+	   (mp->currentStep < mp->lowStep)) {
+		target_freq = (mali_dvfs[mp->currentStep].clock * utilization) / 255;
+		while((mp->currentStep + level) < mp->lowStep &&
+		       mali_dvfs[mp->currentStep + level].clock > target_freq) {
 			++level;
 		}
 	}
 
 	/*if we don't have a level change, don't do anything*/
 	if (level != 0) {
-		nextStep = mp.currentStep + level;
+		nextStep = mp->currentStep + level;
 
 		/*change mali dvfs status*/
-		if (!change_mali_dvfs_status(nextStep,level ? MALI_FALSE : MALI_TRUE)) {
+		if (!change_mali_dvfs_status(nextStep, level < 0 ? MALI_TRUE : MALI_FALSE)) {
 			MALI_DEBUG_PRINT(1, ("error on change_mali_dvfs_status \n"));
 			return MALI_FALSE;
 		}
@@ -339,26 +337,20 @@ static ssize_t max_freq_store(struct sysdev_class * cls, struct sysdev_class_att
 			      const char *buf, size_t count) 
 {
 	unsigned int ret = -EINVAL;
-	int freq, i, s;
+	int freq, s;
 
 	ret = sscanf(buf, "%d", &freq);
 	if (ret != 1) {
 		return -EINVAL;
 	} else {
-		for(i = 0; i < MALI_DVFS_STEPS; i++){
-			if(mali_dvfs[i].clock != freq) continue;
+		s = findStep(freq);
+		if(s > mali_policy.lowStep)
+			s = mali_policy.lowStep;
 
-			s = findStep(freq);
-			if(s > mali_policy.lowStep)
-				s = mali_policy.lowStep;
+		mali_policy.highStep = s;
 
-			mali_policy.highStep = s;
-
-			if(mali_policy.currentStep > mali_policy.highStep)
-				change_mali_dvfs_status(mali_policy.highStep, MALI_FALSE);
-			
-			break;
-		}
+		if(mali_policy.currentStep < mali_policy.highStep)
+			change_mali_dvfs_status(mali_policy.highStep, MALI_FALSE);
 	}
 	return count;	
 }
@@ -373,25 +365,20 @@ static ssize_t min_freq_store(struct sysdev_class * cls, struct sysdev_class_att
 			      const char *buf, size_t count) 
 {
 	unsigned int ret = -EINVAL;
-	int freq, i, s;
+	int freq, s;
 
 	ret = sscanf(buf, "%d", &freq);
 	if (ret != 1) {
 		return -EINVAL;
 	} else {
-		for(i = 0; i < MALI_DVFS_STEPS; i++){
-			if(mali_dvfs[i].clock != freq) continue;
+		s = findStep(freq);
+		if(s < mali_policy.highStep)
+			s = mali_policy.highStep;
 
-			s = findStep(freq);
-			if(s < mali_policy.highStep)
-				s = mali_policy.highStep;
+		mali_policy.lowStep = s;
 
-			mali_policy.lowStep = s;
-
-			if(mali_policy.currentStep < mali_policy.lowStep)
-				change_mali_dvfs_status(mali_policy.lowStep, MALI_TRUE);
-			break;
-		}
+		if(mali_policy.currentStep > mali_policy.lowStep)
+			change_mali_dvfs_status(mali_policy.lowStep, MALI_TRUE);
 	}
 	return count;	
 }
@@ -522,6 +509,8 @@ static ssize_t time_in_state_show(struct sysdev_class * cls,
 			     struct sysdev_class_attribute *attr, char *buf)
 {
 	int i, len = 0;
+
+	do_time_slice(mali_policy.currentStep);
 
 	for (i = MALI_DVFS_STEPS - 1; i >= 0; i--) {
 		len += sprintf(buf + len, "%llu\t%d\n", time_in_state[i], mali_dvfs[i].clock);
