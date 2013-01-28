@@ -471,11 +471,14 @@ struct rq {
 #endif
 	int skip_clock_update;
 
+<<<<<<< HEAD
 	/* time-based average load */
 	u64 nr_last_stamp;
 	unsigned int ave_nr_running;
 	seqcount_t ave_seqcnt;
 
+=======
+>>>>>>> parent of 6489a6d... scheduler: compute time-average nr_running per run-queue
 	/* capture load from *all* tasks on this cpu: */
 	struct load_weight load;
 	unsigned long nr_load_updates;
@@ -1784,6 +1787,7 @@ static const struct sched_class rt_sched_class;
 
 #include "sched_stats.h"
 
+<<<<<<< HEAD
 /* 27 ~= 134217728ns = 134.2ms
  * 26 ~=  67108864ns =  67.1ms
  * 25 ~=  33554432ns =  33.5ms
@@ -1815,15 +1819,22 @@ static void inc_nr_running(struct rq *rq)
 	write_seqcount_begin(&rq->ave_seqcnt);
 	rq->ave_nr_running = do_avg_nr_running(rq);
 	rq->nr_last_stamp = rq->clock_task;
+=======
+static void inc_nr_running(struct rq *rq)
+{
+>>>>>>> parent of 6489a6d... scheduler: compute time-average nr_running per run-queue
 	rq->nr_running++;
 	write_seqcount_end(&rq->ave_seqcnt);
 }
 
 static void dec_nr_running(struct rq *rq)
 {
+<<<<<<< HEAD
 	write_seqcount_begin(&rq->ave_seqcnt);
 	rq->ave_nr_running = do_avg_nr_running(rq);
 	rq->nr_last_stamp = rq->clock_task;
+=======
+>>>>>>> parent of 6489a6d... scheduler: compute time-average nr_running per run-queue
 	rq->nr_running--;
 	write_seqcount_end(&rq->ave_seqcnt);
 }
@@ -3288,6 +3299,7 @@ unsigned long nr_iowait(void)
 	return sum;
 }
 
+<<<<<<< HEAD
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
@@ -3315,6 +3327,8 @@ unsigned long avg_nr_running(void)
 	return sum;
 }
 
+=======
+>>>>>>> parent of 6489a6d... scheduler: compute time-average nr_running per run-queue
 unsigned long nr_iowait_cpu(int cpu)
 {
 	struct rq *this = cpu_rq(cpu);
