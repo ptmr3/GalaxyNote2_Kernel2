@@ -1,8 +1,7 @@
 VERSION = 3
 PATCHLEVEL = 0
-SUBLEVEL = 60
-EXTRAVERSION =-SaberKernel_10.5
-NAME = Sneaky Weasel
+SUBLEVEL = 61
+EXTRAVERSION =-SaberKernel_10.6
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
