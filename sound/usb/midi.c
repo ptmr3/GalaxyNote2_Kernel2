@@ -1031,6 +1031,12 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 		return open ? -ENODEV : 0;
 	}
 
+	down_read(&umidi->disc_rwsem);
+	if (umidi->disconnected) {
+		up_read(&umidi->disc_rwsem);
+		return;
+	}
+
 	mutex_lock(&umidi->mutex);
 	if (open) {
 		if (!umidi->opened[0] && !umidi->opened[1]) {
@@ -1068,8 +1074,7 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 		}
 	}
 	mutex_unlock(&umidi->mutex);
-	up_read(&umidi->disc_rwsem);
-	return 0;
+	up_read(&umidi->disc_rwsem);=
 }
 
 static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
@@ -1090,6 +1095,16 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 		return -ENXIO;
 	}
 
+	down_read(&umidi->disc_rwsem);
+	if (umidi->disconnected) {
+		up_read(&umidi->disc_rwsem);
+		return -ENODEV;
+	}
+	err = usb_autopm_get_interface(umidi->iface);
+	port->autopm_reference = err >= 0;
+	up_read(&umidi->disc_rwsem);
+	if (err < 0 && err != -EACCES)
+		return -EIO;
 	substream->runtime->private_data = port;
 	port->state = STATE_UNKNOWN;
 	return substream_open(substream, 0, 1);
@@ -1097,7 +1112,15 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 
 static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 {
-	return substream_open(substream, 0, 0);
+	struct snd_usb_midi* umidi = substream->rmidi->private_data;
+	struct usbmidi_out_port *port = substream->runtime->private_data;
+
+	substream_open(substream, 0);
+	down_read(&umidi->disc_rwsem);
+	if (!umidi->disconnected && port->autopm_reference)
+		usb_autopm_put_interface(umidi->iface);
+	up_read(&umidi->disc_rwsem);
+	return 0;
 }
 
 static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream, int up)
