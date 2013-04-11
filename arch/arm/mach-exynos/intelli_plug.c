@@ -20,22 +20,10 @@
 #include <linux/sched.h>
 #include <linux/mutex.h>
 #include <linux/module.h>
-#include <linux/rq_stats.h>
-#include <linux/cpufreq.h>
 
-#define INTELLI_PLUG_MAJOR_VERSION	1
-#define INTELLI_PLUG_MINOR_VERSION	5
+#define INTELLI_PLUG_VERSION	1
 
-#define DEF_SAMPLING_RATE		(50000)
-#define DEF_SAMPLING_MS			(200)
-
-#define DUAL_CORE_PERSISTENCE		15
-#define TRI_CORE_PERSISTENCE		12
-#define QUAD_CORE_PERSISTENCE		10
-
-#define RUN_QUEUE_THRESHOLD		38
-
-#define CPU_DOWN_FACTOR			3
+#define DEF_SAMPLING_RATE			(50000)
 
 static DEFINE_MUTEX(intelli_plug_mutex);
 
@@ -49,7 +37,6 @@ module_param(eco_mode_active, uint, 0644);
 
 static unsigned int persist_count = 0;
 static bool suspended = false;
-static bool own_hotplug;
 
 #define NR_FSHIFT	3
 static unsigned int nr_fshift = NR_FSHIFT;
@@ -69,55 +56,6 @@ static unsigned int nr_run_hysteresis = 4;  /* 0.5 thread */
 module_param(nr_run_hysteresis, uint, 0644);
 
 static unsigned int nr_run_last;
-
-static unsigned int NwNs_Threshold[] = { 19, 30,  19,  11,  19,  11, 0,  11};
-static unsigned int TwTs_Threshold[] = {140,  0, 140, 190, 140, 190, 0, 190};
-
-static int mp_decision(void)
-{
-	static bool first_call = true;
-	int new_state = 0;
-	int nr_cpu_online;
-	int index;
-	unsigned int rq_depth;
-	static cputime64_t total_time = 0;
-	static cputime64_t last_time;
-	cputime64_t current_time;
-	cputime64_t this_time = 0;
-
-	current_time = ktime_to_ms(ktime_get());
-	if (first_call) {
-		first_call = false;
-	} else {
-		this_time = current_time - last_time;
-	}
-	total_time += this_time;
-
-	rq_depth = rq_info.rq_avg;
-	//pr_info(" rq_deptch = %u", rq_depth);
-	nr_cpu_online = num_online_cpus();
-
-	if (nr_cpu_online) {
-		index = (nr_cpu_online - 1) * 2;
-		if ((nr_cpu_online < 4) && (rq_depth >= NwNs_Threshold[index])) {
-			if (total_time >= TwTs_Threshold[index]) {
-				new_state = 1;
-			}
-		} else if (rq_depth <= NwNs_Threshold[index+1]) {
-			if (total_time >= TwTs_Threshold[index+1] ) {
-				new_state = 0;
-			}
-		} else {
-			total_time = 0;
-		}
-	} else {
-		total_time = 0;
-	}
-
-	last_time = ktime_to_ms(ktime_get());
-
-	return new_state;
-}
 
 static unsigned int calculate_thread_stats(void)
 {
@@ -155,46 +93,20 @@ static unsigned int calculate_thread_stats(void)
 	return nr_run;
 }
 
-static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
+static void intelli_plug_work_fn(struct work_struct *work)
 {
 	unsigned int nr_run_stat;
-	unsigned int rq_stat;
-	unsigned int cpu_count = 0;
-	unsigned int nr_cpus = 0;
 
-	int decision = 0;
-
-	if (intelli_plug_active == 1 && !own_hotplug) {
+	if (intelli_plug_active == 1) {
 		nr_run_stat = calculate_thread_stats();
 		//pr_info("nr_run_stat: %u\n", nr_run_stat);
-		rq_stat = rq_info.rq_avg;
-
-		cpu_count = nr_run_stat;
-		// detect artificial loads or constant loads
-		// using msm rqstats
-		nr_cpus = num_online_cpus();
-		if (!eco_mode_active && (nr_cpus >= 1 && nr_cpus < 4)) {
-			decision = mp_decision();
-			if (decision) {
-				switch (nr_cpus) {
-					case 2:
-						cpu_count = 3;
-						//pr_info("nr_run(2) => %u\n", nr_run_stat);
-						break;
-					case 3:
-						cpu_count = 4;
-						//pr_info("nr_run(3) => %u\n", nr_run_stat);
-						break;
-				}
-			}
-		}
 
 		if (!suspended) {
-			switch (cpu_count) {
+			switch (nr_run_stat) {
 				case 1:
 					if (persist_count > 0)
 						persist_count--;
-					if (nr_cpus == 2 && persist_count == 0)
+					if (num_online_cpus() == 2 && persist_count == 0)
 						cpu_down(1);
 					if (eco_mode_active) {
 						cpu_down(3);
@@ -203,10 +115,8 @@ static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
 					//pr_info("case 1: %u\n", persist_count);
 					break;
 				case 2:
-					persist_count = DUAL_CORE_PERSISTENCE;
-					if (!decision)
-						persist_count = DUAL_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
-					if (nr_cpus == 1)
+					persist_count = 27;
+					if (num_online_cpus() == 1)
 						cpu_up(1);
 					else {
 						cpu_down(3);
@@ -215,20 +125,16 @@ static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
 					//pr_info("case 2: %u\n", persist_count);
 					break;
 				case 3:
-					persist_count = TRI_CORE_PERSISTENCE;
-					if (!decision)	
-						persist_count = TRI_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
-					if (nr_cpus == 2)
+					persist_count = 21;
+					if (num_online_cpus() == 2)
 						cpu_up(2);
 					else
 						cpu_down(3);
 					//pr_info("case 3: %u\n", persist_count);
 					break;
 				case 4:
-					persist_count = QUAD_CORE_PERSISTENCE;
-					if (!decision)	
-						persist_count = QUAD_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
-					if (nr_cpus == 3)
+					persist_count = 15;
+					if (num_online_cpus() == 3)
 						cpu_up(3);
 					//pr_info("case 4: %u\n", persist_count);
 					break;
@@ -239,45 +145,12 @@ static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
 		} //else
 			//pr_info("intelli_plug is suspened!\n");
 	}
-	schedule_delayed_work_on(0, &intelli_plug_work,
-		msecs_to_jiffies(DEF_SAMPLING_MS));
+	schedule_delayed_work_on(0, &intelli_plug_work, msecs_to_jiffies(50));
 }
-
-static int intelli_plug_cpufreq_policy_notifier_call(struct notifier_block *this,
-        unsigned long code, void *data)
-{
-  struct cpufreq_policy *policy = data;
-
-	switch (code) {
-	case CPUFREQ_ADJUST:
-		if (
-			(!strnicmp(policy->governor->name, "pegasusq", CPUFREQ_NAME_LEN)) ||
-			(!strnicmp(policy->governor->name, "hotplug", CPUFREQ_NAME_LEN)) ||
-			(!strnicmp(policy->governor->name, "lulzactiveq", CPUFREQ_NAME_LEN))
-			) 
-		{
-		own_hotplug = true;
-		} else {
-		own_hotplug = false;
-		}
-		break;
-	case CPUFREQ_INCOMPATIBLE:
-	case CPUFREQ_NOTIFY:
-	default:
-		break;
-	}
-
-	return NOTIFY_DONE;
-}
-static struct notifier_block intelli_plug_cpufreq_policy_notifier = {
-	.notifier_call = intelli_plug_cpufreq_policy_notifier_call,
-};
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 static void intelli_plug_early_suspend(struct early_suspend *handler)
 {
-	int i;
-	int num_of_active_cores = 4;
 	
 	cancel_delayed_work_sync(&intelli_plug_work);
 
@@ -286,39 +159,26 @@ static void intelli_plug_early_suspend(struct early_suspend *handler)
 	mutex_unlock(&intelli_plug_mutex);
 
 	// put rest of the cores to sleep!
-	for (i=1; i<num_of_active_cores; i++) {
-		if (cpu_online(i))
-			cpu_down(i);
+	switch (num_online_cpus()) {
+		case 4:
+			cpu_down(3);
+		case 3:
+			cpu_down(2);
+		case 2:
+			cpu_down(1);
 	}
 }
 
-static void __cpuinit intelli_plug_late_resume(struct early_suspend *handler)
+static void intelli_plug_late_resume(struct early_suspend *handler)
 {
-	int num_of_active_cores;
-	int i;
-
 	mutex_lock(&intelli_plug_mutex);
-	/* keep cores awake long enough for faster wake up */
-	persist_count = DUAL_CORE_PERSISTENCE;
 	suspended = false;
 	mutex_unlock(&intelli_plug_mutex);
 
-	/* wake up everyone */
-	if (eco_mode_active)
-		num_of_active_cores = 2;
-	else
-		num_of_active_cores = 4;
-
-	for (i=1; i<num_of_active_cores; i++) {
-		if (!cpu_online(i))
-			cpu_up(i);
-	}
-
-	schedule_delayed_work_on(0, &intelli_plug_work,
-		msecs_to_jiffies(10));
+	schedule_delayed_work_on(0, &intelli_plug_work, msecs_to_jiffies(10));
 }
 
-static struct early_suspend intelli_plug_early_suspend_struct_driver = {
+static struct early_suspend intelli_plug_early_suspend_struct = {
 	.level = EARLY_SUSPEND_LEVEL_DISABLE_FB + 10,
 	.suspend = intelli_plug_early_suspend,
 	.resume = intelli_plug_late_resume,
@@ -333,20 +193,15 @@ int __init intelli_plug_init(void)
 	if (num_online_cpus() > 1)
 		delay -= jiffies % delay;
 
-	//pr_info("intelli_plug: scheduler delay is: %d\n", delay);
-	pr_info("intelli_plug: version %d.%d by faux123\n",
-		 INTELLI_PLUG_MAJOR_VERSION,
-		 INTELLI_PLUG_MINOR_VERSION);
+	pr_info("intelli_plug: scheduler delay is: %d\n", delay);
+	pr_info("intelli_plug: version %d by faux123\n", INTELLI_PLUG_VERSION);
 
 	INIT_DELAYED_WORK(&intelli_plug_work, intelli_plug_work_fn);
 	schedule_delayed_work_on(0, &intelli_plug_work, delay);
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-	register_early_suspend(&intelli_plug_early_suspend_struct_driver);
+	register_early_suspend(&intelli_plug_early_suspend_struct);
 #endif
-
-  	cpufreq_register_notifier(&intelli_plug_cpufreq_policy_notifier,
-            CPUFREQ_POLICY_NOTIFIER);
 	return 0;
 }
 
