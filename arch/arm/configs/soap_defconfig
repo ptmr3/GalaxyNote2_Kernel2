@@ -1,6 +1,10 @@
 #
 # Automatically generated make config: don't edit
+<<<<<<< HEAD:arch/arm/configs/soap_defconfig
 # Linux/arm 3.0.64-SOAP_Kernel_01 Kernel Configuration
+=======
+# Linux/arm 3.0.74-SaberKernel_19 Kernel Configuration
+>>>>>>> 069263c... Saber Config:arch/arm/configs/saber_defconfig
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -36,9 +40,15 @@ CONFIG_HAVE_IRQ_WORK=y
 #
 CONFIG_EXPERIMENTAL=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
+<<<<<<< HEAD:arch/arm/configs/soap_defconfig
 CONFIG_CROSS_COMPILE=""
 CONFIG_LOCALVERSION="-CM"
 CONFIG_LOCALVERSION_AUTO=y
+=======
+CONFIG_CROSS_COMPILE="/usr/local/arm/arm-eabi-4.4.3/bin/arm-eabi-"
+CONFIG_LOCALVERSION=""
+# CONFIG_LOCALVERSION_AUTO is not set
+>>>>>>> 069263c... Saber Config:arch/arm/configs/saber_defconfig
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_LZMA=y
 CONFIG_HAVE_KERNEL_LZO=y
@@ -564,6 +574,12 @@ CONFIG_QC_MODEM_M3=y
 CONFIG_USB_CDFS_SUPPORT=y
 CONFIG_SAMSUNG_PRODUCT_SHIP=y
 # CONFIG_CORESIGHT_ETM is not set
+<<<<<<< HEAD:arch/arm/configs/soap_defconfig
+=======
+# CONFIG_CPU_FREQ_TETHERING is not set
+CONFIG_RQ_STATS=y
+CONFIG_INTELLI_PLUG=y
+>>>>>>> 069263c... Saber Config:arch/arm/configs/saber_defconfig
 
 #
 # Processor Type
@@ -1282,6 +1298,7 @@ CONFIG_MUIC_MAX77693_SUPPORT_SMART_DOCK=y
 # CONFIG_SENSORS_LIS3_I2C is not set
 # CONFIG_SAMSUNG_C2C is not set
 # CONFIG_SEC_MODEM is not set
+CONFIG_TOUCH_WAKE=y
 CONFIG_HAVE_IDE=y
 # CONFIG_IDE is not set
 
