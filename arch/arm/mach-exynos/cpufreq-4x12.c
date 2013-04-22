@@ -237,7 +237,7 @@ static unsigned int clkdiv_cpu1_4412[CPUFREQ_LEVEL_END][3] = {
 	/* Clock divider value for following
 	 * { DIVCOPY, DIVHPM, DIVCORES }
 	 */
-		/* ARM L0: 1920MHz */
+	/* ARM L0: 1920MHz */
 	{ 7, 0, 7 },
 
 	/* ARM L1: 1800MHz */
