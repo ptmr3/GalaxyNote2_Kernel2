@@ -21,7 +21,11 @@
  
 /* BE VERY CAREFUL IF YOU CHANGE THIS CODE...!  */ 
  
+<<<<<<< HEAD
 #include &lt;linux/memcopy.h&gt;
+=======
+#include <linux/memcopy.h>
+>>>>>>> 132c21e... memcopy
  
 /* 
  * _wordcopy_fwd_aligned -- Copy block beginning at SRCP to block beginning 
@@ -70,7 +74,11 @@ void _wordcopy_fwd_aligned (long int dstp, long int srcp, size_t len)
         len += 1; 
         goto do6; 
     case 0: 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             return; 
         a0 = ((op_t *) srcp)[0]; 
         srcp -= 0 * OPSIZ; 
@@ -81,7 +89,11 @@ void _wordcopy_fwd_aligned (long int dstp, long int srcp, size_t len)
         srcp -=-1 * OPSIZ; 
         dstp -= 0 * OPSIZ; 
         len -= 1; 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             goto do0; 
         goto do8;            /* No-op.  */ 
     } 
@@ -147,7 +159,11 @@ void _wordcopy_fwd_dest_aligned (long int dstp, long int srcp, size_t len)
      * Make SRCP aligned by rounding it down to the beginning of the `op_t' 
      * it points in the middle of. 
      */ 
+<<<<<<< HEAD
     srcp &amp;= -OPSIZ; 
+=======
+    srcp &= -OPSIZ; 
+>>>>>>> 132c21e... memcopy
  
     switch (len % 4) { 
     case 2: 
@@ -165,7 +181,11 @@ void _wordcopy_fwd_dest_aligned (long int dstp, long int srcp, size_t len)
         len += 1; 
         goto do2; 
     case 0: 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             return; 
         a3 = ((op_t *) srcp)[0]; 
         a0 = ((op_t *) srcp)[1]; 
@@ -179,7 +199,11 @@ void _wordcopy_fwd_dest_aligned (long int dstp, long int srcp, size_t len)
         srcp -=-2 * OPSIZ; 
         dstp -= 0 * OPSIZ; 
         len -= 1; 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             goto do0; 
         goto do4;            /* No-op. */ 
     } 
@@ -259,7 +283,11 @@ void _wordcopy_bwd_aligned (long int dstp, long int srcp, size_t len)
         len += 1; 
         goto do6; 
     case 0: 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             return; 
         srcp -= 8 * OPSIZ; 
         dstp -= 7 * OPSIZ; 
@@ -270,7 +298,11 @@ void _wordcopy_bwd_aligned (long int dstp, long int srcp, size_t len)
         dstp -= 8 * OPSIZ; 
         a1 = ((op_t *) srcp)[8]; 
         len -= 1; 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             goto do0; 
         goto do8;            /* No-op.  */ 
     } 
@@ -337,7 +369,11 @@ void _wordcopy_bwd_dest_aligned (long int dstp, long int srcp, size_t len)
      * Make srcp aligned by rounding it down to the beginning of the op_t 
      * it points in the middle of. 
      */ 
+<<<<<<< HEAD
     srcp &amp;= -OPSIZ; 
+=======
+    srcp &= -OPSIZ; 
+>>>>>>> 132c21e... memcopy
     srcp += OPSIZ; 
  
     switch (len % 4) { 
@@ -356,7 +392,11 @@ void _wordcopy_bwd_dest_aligned (long int dstp, long int srcp, size_t len)
         len += 1; 
         goto do2; 
     case 0: 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             return; 
         srcp -= 5 * OPSIZ; 
         dstp -= 3 * OPSIZ; 
@@ -369,7 +409,11 @@ void _wordcopy_bwd_dest_aligned (long int dstp, long int srcp, size_t len)
         a1 = ((op_t *) srcp)[5]; 
         a0 = ((op_t *) srcp)[4]; 
         len -= 1; 
+<<<<<<< HEAD
         if (OP_T_THRESHOLD &lt;= 3 * OPSIZ &amp;&amp; len == 0) 
+=======
+        if (OP_T_THRESHOLD <= 3 * OPSIZ && len == 0) 
+>>>>>>> 132c21e... memcopy
             goto do0; 
         goto do4;            /* No-op.  */ 
     } 
@@ -401,3 +445,7 @@ do0:
     ((op_t *) dstp)[3] = MERGE (a0, sh_1, a1, sh_2); 
 } 
  
+<<<<<<< HEAD
+=======
+
+>>>>>>> 132c21e... memcopy
