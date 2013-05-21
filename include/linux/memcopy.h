@@ -37,15 +37,9 @@
  * instruction. 
  */ 
  
-<<<<<<< HEAD
-#include &lt;linux/types.h&gt; 
-#include &lt;linux/compiler.h&gt; 
-#include &lt;asm/byteorder.h&gt; 
-=======
 #include <linux/types.h> 
 #include <linux/compiler.h> 
 #include <asm/byteorder.h> 
->>>>>>> 132c21e... memcopy
  
 /* 
  * The macros defined in this file are: 
@@ -80,15 +74,9 @@ typedef unsigned char byte;
  
 #ifndef MERGE 
 # ifdef __LITTLE_ENDIAN 
-<<<<<<< HEAD
-#  define MERGE(w0, sh_1, w1, sh_2) (((w0) &gt;&gt; (sh_1)) | ((w1) &lt;&lt; (sh_2))) 
-# elif defined(__BIG_ENDIAN) 
-#  define MERGE(w0, sh_1, w1, sh_2) (((w0) &lt;&lt; (sh_1)) | ((w1) &gt;&gt; (sh_2))) 
-=======
 #  define MERGE(w0, sh_1, w1, sh_2) (((w0) >> (sh_1)) | ((w1) << (sh_2))) 
 # elif defined(__BIG_ENDIAN) 
 #  define MERGE(w0, sh_1, w1, sh_2) (((w0) << (sh_1)) | ((w1) >> (sh_2))) 
->>>>>>> 132c21e... memcopy
 # else 
 #  error "Macro MERGE() hasn't defined!" 
 # endif 
@@ -102,11 +90,7 @@ typedef unsigned char byte;
 #define BYTE_COPY_FWD(dst_bp, src_bp, nbytes)                      \
 do {                                          \
     size_t __nbytes = (nbytes);                          \
-<<<<<<< HEAD
-    while (__nbytes &gt; 0) {                              \
-=======
     while (__nbytes > 0) {                              \
->>>>>>> 132c21e... memcopy
         byte __x = ((byte *) src_bp)[0];                  \
         src_bp += 1;                              \
         __nbytes -= 1;                              \
@@ -126,11 +110,7 @@ do {                                          \
 #define BYTE_COPY_BWD(dst_ep, src_ep, nbytes)                      \
 do {                                          \
     size_t __nbytes = (nbytes);                          \
-<<<<<<< HEAD
-    while (__nbytes &gt; 0) {                              \
-=======
     while (__nbytes > 0) {                              \
->>>>>>> 132c21e... memcopy
         byte __x;                              \
         src_ep -= 1;                              \
         __x = ((byte *) src_ep)[0];                      \
@@ -156,13 +136,8 @@ do {                                          \
     else                                      \
         _wordcopy_fwd_dest_aligned (dst_bp, src_bp, (nbytes) / OPSIZ);\
                                           \
-<<<<<<< HEAD
-    src_bp += (nbytes) &amp; -OPSIZ;                          \
-    dst_bp += (nbytes) &amp; -OPSIZ;                          \
-=======
     src_bp += (nbytes) & -OPSIZ;                          \
     dst_bp += (nbytes) & -OPSIZ;                          \
->>>>>>> 132c21e... memcopy
     (nbytes_left) = (nbytes) % OPSIZ;                      \
 } while (0) 
 #endif 
@@ -185,13 +160,8 @@ do {                                          \
     else                                      \
         _wordcopy_bwd_dest_aligned (dst_ep, src_ep, (nbytes) / OPSIZ);\
                                           \
-<<<<<<< HEAD
-    src_ep -= (nbytes) &amp; -OPSIZ;                          \
-    dst_ep -= (nbytes) &amp; -OPSIZ;                          \
-=======
     src_ep -= (nbytes) & -OPSIZ;                          \
     dst_ep -= (nbytes) & -OPSIZ;                          \
->>>>>>> 132c21e... memcopy
     (nbytes_left) = (nbytes) % OPSIZ;                      \
 } while (0)
 #endif
@@ -203,11 +173,7 @@ static __always_inline void mem_copy_fwd(unsigned long dstp,
                     size_t count) 
 { 
     /* If there not too few bytes to copy, use word copy. */ 
-<<<<<<< HEAD
-    if (count &gt;= OP_T_THRESHOLD) { 
-=======
     if (count >= OP_T_THRESHOLD) { 
->>>>>>> 132c21e... memcopy
         /* Copy just a few bytes to make dstp aligned. */ 
         count -= (-dstp) % OPSIZ; 
         BYTE_COPY_FWD(dstp, srcp, (-dstp) % OPSIZ); 
@@ -237,11 +203,7 @@ static __always_inline void mem_copy_bwd(unsigned long dstp,
     dstp += count; 
  
     /* If there not too few bytes to copy, use word copy. */ 
-<<<<<<< HEAD
-    if (count &gt;= OP_T_THRESHOLD) { 
-=======
     if (count >= OP_T_THRESHOLD) { 
->>>>>>> 132c21e... memcopy
         /* Copy just a few bytes to make dstp aligned. */ 
         count -= dstp % OPSIZ; 
         BYTE_COPY_BWD(dstp, srcp, dstp % OPSIZ); 
@@ -262,7 +224,4 @@ static __always_inline void mem_copy_bwd(unsigned long dstp,
 #endif 
  
 #endif 
-<<<<<<< HEAD
-=======
 
->>>>>>> 132c21e... memcopy

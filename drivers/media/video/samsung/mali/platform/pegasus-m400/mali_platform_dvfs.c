@@ -22,6 +22,9 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/driver.h>
 
+#include <linux/sysdev.h>
+#include <linux/platform_device.h> 
+
 #include <asm/io.h>
 
 #include "mali_device_pause_resume.h"
