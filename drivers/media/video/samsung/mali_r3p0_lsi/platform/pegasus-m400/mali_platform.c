@@ -51,7 +51,7 @@
 #define CLK_DIV_STAT_G3D 	0x1003C62C
 #define CLK_DESC 			"clk-divider-status"
 
-#define MALI_BOTTOMLOCK_VOL	900000
+#define MALI_BOTTOMLOCK_VOL	600000
 
 typedef struct mali_runtime_resumeTag{
 	int clk;
@@ -90,7 +90,7 @@ int mali_gpu_vol = 950000;
 #if MALI_DVFS_ENABLED
 #define MALI_DVFS_DEFAULT_STEP 2
 #endif
-#if MALI_VOLTAGE_LOCK
+/*#if MALI_VOLTAGE_LOCK
 int mali_lock_vol = 0;
 static _mali_osk_atomic_t voltage_lock_status;
 static mali_bool mali_vol_lock_flag = 0;
@@ -122,6 +122,7 @@ extern struct platform_device exynos4_device_pd[];
 #endif
 #endif
 
+*/
 mali_io_address clk_register_map=0;
 
 _mali_osk_lock_t *mali_dvfs_lock = 0;
