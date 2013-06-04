@@ -24,9 +24,9 @@
 
 #define CPUFREQ_NAME_LEN 16
 
-#define SCALING_MAX_COUPLED	 1
-#define SCALING_MAX_UNDEFINED	 0
-#define SCALING_MAX_UNCOUPLED	-1
+#if defined(CONFIG_CPU_EXYNOS4212) || defined(CONFIG_CPU_EXYNOS4412)
+#define CPUFREQ_LEVEL_END		(L20 + 1)
+#endif
 
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
