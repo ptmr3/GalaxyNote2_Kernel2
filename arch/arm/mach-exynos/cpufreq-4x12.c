@@ -66,6 +66,7 @@ static struct cpufreq_frequency_table exynos4x12_freq_table[] = {
 	{L16, 300*1000},
 	{L17, 200*1000},
 	{L18, 160*1000},
+	{L19, 140*1000},
 	{0, CPUFREQ_TABLE_END},
 };
 
@@ -185,6 +186,9 @@ static unsigned int clkdiv_cpu0_4412[CPUFREQ_LEVEL_END][8] = {
 
 	/* ARM L18: 160MHz */
 	{ 0, 1, 3, 0, 1, 1, 1, 0 },
+
+	/* ARM L19: 140MHz */
+	{ 0, 1, 3, 0, 1, 1, 1, 0 },
 };
 
 static unsigned int clkdiv_cpu1_4212[CPUFREQ_LEVEL_END][2] = {
@@ -297,6 +301,9 @@ static unsigned int clkdiv_cpu1_4412[CPUFREQ_LEVEL_END][3] = {
 
 	/* ARM L18: 160MHz */
 	{ 3, 0, 0 },
+
+	/* ARM L19: 140MHz */
+	{ 3, 0, 0 },
 };
 
 static unsigned int exynos4x12_apll_pms_table[CPUFREQ_LEVEL_END] = {
@@ -357,6 +364,9 @@ static unsigned int exynos4x12_apll_pms_table[CPUFREQ_LEVEL_END] = {
 	/* APLL FOUT L18: 160MHz */
 	((160<<16)|(3<<8)|(0x3)),
 
+	/* APLL FOUT L19: 140MHz */
+	((140<<16)|(3<<8)|(0x3)),
+
 };
 
 /*
@@ -411,6 +421,7 @@ static const unsigned int asv_voltage_step_12_5[CPUFREQ_LEVEL_END][12] = {
 	{  937500,  925000,  925000,  925000,  912500,  900000,  887500,  887500,  887500,  887500,  875000,  875000 }, /* L16 */
 	{  925000,  912500,  912500,  912500,  900000,  887500,  887500,  887500,  887500,  887500,  875000,  875000 }, /* L17 */
 	{  912500,  900000,  900000,  900000,  887500,  875000,  875000,  875000,  875000,  875000,  850000,  850000 }, /* L18 */
+	{  900000,  887500,  887500,  887500,  875000,  850000,  850000,  850000,  850000,  850000,  825000,  825000 }, /* L19 */
 };
 
 /* 20120927 DVFS table for pega prime */
@@ -435,6 +446,7 @@ static const unsigned int asv_voltage_step_12_5_rev2[CPUFREQ_LEVEL_END][13] = {
 	{  937500,  925000,  925000,  925000,  912500,  900000,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L16 */
 	{  925000,  912500,  912500,  912500,  900000,  887500,  887500,  887500,  887500,  887500,  875000,  875000,  875000 }, /* L17 */
 	{  912500,  900000,  900000,  900000,  887500,  875000,  875000,  875000,  875000,  875000,  850000,  850000,  850000 }, /* L18 */
+	{  900000,  887500,  887500,  887500,  875000,  850000,  850000,  850000,  850000,  850000,  825000,  825000,  825000 }, /* L19 */
 };
 
 static void set_clkdiv(unsigned int div_index)
@@ -595,7 +607,7 @@ static void exynos4x12_set_frequency(unsigned int old_index,
 	/* ABB value is changed in below case */
 	if (soc_is_exynos4412() && (exynos_result_of_asv > 3)
 		&& (samsung_rev() < EXYNOS4412_REV_2_0)) {
-		if (new_index == L18)
+		if (new_index == L19)
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_100V);
 		else
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_130V);
