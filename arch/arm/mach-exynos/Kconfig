@@ -1826,6 +1826,12 @@ config RQ_STATS
     	  Select this to enable scheduler rune queue statistic
     	  collections
 
+config SK_UC
+  bool "Enable Under Clocking"
+  default n
+  help
+    Multiple freq steps under stock specified 200
+
 config INTELLI_PLUG
 	bool "Enable intelli-plug cpu hotplug driver"
 	default n
