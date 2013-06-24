@@ -69,6 +69,7 @@ static struct cpufreq_frequency_table exynos4x12_freq_table[] = {
 	{L18, 160*1000},
 	{L19, 140*1000},
 	{L20, 120*1000},
+	{0, CPUFREQ_TABLE_END},
 #else
 	{L0, 1920*1000},
 	{L1, 1800*1000},
