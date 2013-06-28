@@ -212,10 +212,10 @@ static unsigned int clkdiv_cpu0_4412[CPUFREQ_LEVEL_END][8] = {
 	{ 0, 1, 3, 0, 1, 1, 1, 0 },
 
 	/* ARM L19: 140MHz */
-	{ 0, 1, 3, 0, 1, 1, 1, 0 },
+	{ 0, 1, 2, 0, 1, 1, 1, 0 },
 
 	/* ARM L20: 120MHz */
-	{ 0, 1, 3, 0, 1, 1, 1, 0 },
+	{ 0, 1, 1, 0, 1, 1, 1, 0 },
 #else
 	/* ARM L0: 1920Mhz */
 	{ 0, 4, 7, 0, 7, 1, 7, 0 },
@@ -386,10 +386,10 @@ static unsigned int clkdiv_cpu1_4412[CPUFREQ_LEVEL_END][3] = {
 	{ 3, 0, 0 },
 
 	/* ARM L19: 140MHz */
-	{ 3, 0, 0 },
+	{ 2, 0, 0 },
 
 	/* ARM L20: 120MHz */
-	{ 3, 0, 0 },
+	{ 1, 0, 0 },
 #else
 	/* ARM L0: 1920MHz */
 	{ 7, 0, 7 },
