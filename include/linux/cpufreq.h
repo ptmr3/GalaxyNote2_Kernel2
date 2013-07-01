@@ -26,7 +26,7 @@
 
 #ifdef CONFIG_SK_UC
 #if defined(CONFIG_CPU_EXYNOS4212) || defined(CONFIG_CPU_EXYNOS4412)
-#define CPUFREQ_LEVEL_END    (L20 + 1)
+#define CPUFREQ_LEVEL_END    (L18 + 1)
 #endif 
 #define SCALING_MAX_COUPLED	 1
 #define SCALING_MAX_UNDEFINED	 0
