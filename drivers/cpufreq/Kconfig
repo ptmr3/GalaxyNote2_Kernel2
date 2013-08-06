@@ -150,6 +150,10 @@ config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
 	bool "pegasusq"
 	select CPU_FREQ_GOV_PEGASUSQ
 
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ
+bool "lulzactiveq"
+select CPU_FREQ_GOV_LULZACTIVEQ
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -335,6 +339,12 @@ config SLP_CHECK_CPU_LOAD
 config SLP_GOV_DYNAMIC_PARAMS
         bool "check SLP GOV. Dynamic Params feature"
 	depends on CPU_FREQ_GOV_SLP
+
+config CPU_FREQ_GOV_LULZACTIVEQ
+    tristate "'lulzactiveq' cpufreq governor"
+    depends on CPU_FREQ
+    help
+      'lulzactiveq' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_DVFS_MONITOR
 	bool "dvfs monitor"
