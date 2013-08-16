@@ -112,6 +112,15 @@ config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	  Be aware that not all cpufreq drivers support the conservative
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
+
+config CPU_FREQ_DEFAULT_GOV_ZZMOOVE
+	bool "zzmoove"
+	select CPU_FREQ_GOV_ZZMOOVE
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'zzmoove' as default, using predefined
+	  frequency lookup tables and optimized scaling triggers instead of
+	  % frequency steps to get smooth up/downscaling dependant on CPU load.
 	  
 config CPU_FREQ_DEFAULT_GOV_LAZY
     bool "lazy"
@@ -119,13 +128,6 @@ config CPU_FREQ_DEFAULT_GOV_LAZY
 	select CPU_FREQ_GOV_PERFORMANCE
 	help
 	  Use the CPUFreq governor 'lazy' as default.
-
-config CPU_FREQ_DEFAULT_GOV_LULZACTIVE
-	bool "lulzactive"
-	select CPU_FREQ_GOV_LULZACTIVE
-	select CPU_FREQ_GOV_PERFORMANCE
-	help
-	  Use the CPUFreq governor 'lulzactive' as default.
 
 config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	bool "interactive"
@@ -293,17 +295,19 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_LULZACTIVE
-	tristate "'lulzactive' cpufreq governor"
+config CPU_FREQ_GOV_ZZMOOVE
+	tristate "'zzmoove' cpufreq governor"
 	depends on CPU_FREQ
 	help
-	  'lulzactive' - a new interactive governor by Tegrak!
+	  'zzmoove' - based on cpufreq_conservative, using predefined
+	  frequency lookup tables and optimized scaling triggers instead of
+	  % frequency steps to get smooth up/downscaling dependant on CPU load.
 
 	  If in doubt, say N.
 
 config CPU_FREQ_GOV_LAZY
 	tristate "'lazy' cpufreq governor"
-		depends on CPU_FREQ
+	depends on CPU_FREQ
 
 config CPU_FREQ_GOV_ADAPTIVE
 	tristate "'adaptive' cpufreq policy governor"

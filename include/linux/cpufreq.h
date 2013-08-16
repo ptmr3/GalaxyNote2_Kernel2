@@ -378,15 +378,16 @@ extern struct cpufreq_governor cpufreq_gov_powersave;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE)
 extern struct cpufreq_governor cpufreq_gov_userspace;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_userspace)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LULZACTIVE)
-extern struct cpufreq_governor cpufreq_gov_lulzactive;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_lulzactive)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND)
 extern struct cpufreq_governor cpufreq_gov_ondemand;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_ondemand)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE)
 extern struct cpufreq_governor cpufreq_gov_conservative;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_conservative)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ZZMOOVE)
+extern struct cpufreq_governor cpufreq_gov_zzmoove;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_zzmoove)
+>>>>>>> 422d9c7... ZZmoove v7 to replace Lulz
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
@@ -398,7 +399,7 @@ extern struct cpufreq_governor cpufreq_gov_pegasusq;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_pegasusq)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ)
 extern struct cpufreq_governor cpufreq_gov_lulzactiveq;
-#define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_lulzactiveq)
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_lulzactiveq)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_HOTPLUG)
 extern struct cpufreq_governor cpufreq_gov_hotplug;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_hotplug)
